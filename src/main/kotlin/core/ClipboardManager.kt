@@ -3,7 +3,7 @@ import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
-import javax.activation.DataHandler
+import sun.awt.datatransfer.ClipboardTransferable
 
 class ClipboardManager {
 
@@ -28,9 +28,10 @@ class ClipboardManager {
 		var data: Any;
 		for (flavor in availableFlavors) {
 			try {
+				val transferable = clipboard.getContents(ClipboardTransferable::class)
 				data = clipboard.getData(flavor);
 				if (data != null) {
-					history.add(ClipboardEntry(data, flavor));
+					history.add(ClipboardEntry(data, flavor, transferable));
 					break;
 				}
 			} catch (e: Exception) {
@@ -40,11 +41,15 @@ class ClipboardManager {
 	}
 
 	fun set(entry: ClipboardEntry) {
-		if (entry.flavor == DataFlavor.imageFlavor) {
-			clipboard.setContents(ImageTransferable((entry.data as Image)), null)
-		} else {
-			clipboard.setContents(StringSelection(entry.data as String), null);
-		}
+		clipboard.setContents(entry.transferable, null);
+		
+//		if (entry.flavor == DataFlavor.imageFlavor) {
+//			clipboard.setContents(ImageTransferable((entry.data as Image)), null)
+//		} else if (entry.flavor == DataFlavor.javaFileListFlavor){
+//			DataFlavor.javaFileListFlavor
+//		} else {
+//			clipboard.setContents(StringSelection(entry.data as String), null);
+//		}
 	}
 
 }
