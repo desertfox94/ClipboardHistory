@@ -11,6 +11,7 @@ import tornadofx.contentWidth
 import tornadofx.readonlyColumn
 import tornadofx.tableview
 import javafx.scene.input.MouseButton
+import java.text.SimpleDateFormat
 
 class ClipboardHistoryView() : View() {
 
@@ -18,8 +19,10 @@ class ClipboardHistoryView() : View() {
 
 	val clipboardManager = ClipboardManager();
 
-	lateinit var table : TableView<ClipboardEntry>;
-	
+	val dateFormatter = SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
+
+	lateinit var table: TableView<ClipboardEntry>;
+
 	init {
 		title = "Clipboard History"
 		with(root) {
@@ -29,9 +32,13 @@ class ClipboardHistoryView() : View() {
 						clipboardManager.set(table.selectionModel.selectedItemProperty().get())
 					}
 				})
-				readonlyColumn("Item", ClipboardEntry::flavor)
+				readonlyColumn("Type", ClipboardEntry::flavor).cellFormat {
+					text = it.subType
+				}
 				readonlyColumn("Count", ClipboardEntry::data).contentWidth(useAsMax = true)
-//                        resizeColumnsToFitContent()
+				readonlyColumn("Timestamp", ClipboardEntry::date).cellFormat {
+					text = dateFormatter.format(it);
+				}
 			}
 
 		}

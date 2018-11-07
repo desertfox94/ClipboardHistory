@@ -1,16 +1,18 @@
+import com.sun.glass.ui.ClipboardAssistance
+import javafx.scene.input.Clipboard
+import sun.awt.datatransfer.ClipboardTransferable
 import java.awt.Image
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
-import java.awt.datatransfer.StringSelection
 import java.awt.datatransfer.Transferable
-import sun.awt.datatransfer.ClipboardTransferable
 
 class ClipboardManager {
 
 	var history: ClipboardHistory = ClipboardHistory();
 	val clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
+	val fxClipboard = Clipboard.getSystemClipboard();
 	var availableFlavors: List<DataFlavor>;
+	val clipboardAssistance: ClipboardAssistance;
 
 	constructor() {
 		availableFlavors = listOf(
@@ -21,7 +23,13 @@ class ClipboardManager {
 				DataFlavor.selectionHtmlFlavor,
 				DataFlavor.stringFlavor
 		)
-		clipboard.addFlavorListener { handleClipboardData() }
+
+		clipboardAssistance = object : ClipboardAssistance(com.sun.glass.ui.Clipboard.SYSTEM) {
+			override fun contentChanged() {
+				handleClipboardData()
+			}
+		}
+
 	}
 
 	fun handleClipboardData() {
@@ -42,7 +50,7 @@ class ClipboardManager {
 
 	fun set(entry: ClipboardEntry) {
 		clipboard.setContents(entry.transferable, null);
-		
+
 //		if (entry.flavor == DataFlavor.imageFlavor) {
 //			clipboard.setContents(ImageTransferable((entry.data as Image)), null)
 //		} else if (entry.flavor == DataFlavor.javaFileListFlavor){
@@ -54,7 +62,7 @@ class ClipboardManager {
 
 }
 
-class ImageTransferable(val image: Image): Transferable {
+class ImageTransferable(val image: Image) : Transferable {
 	override fun getTransferData(flavor: DataFlavor?): Any? {
 		return image;
 	}
