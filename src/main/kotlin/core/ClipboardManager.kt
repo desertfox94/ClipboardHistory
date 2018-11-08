@@ -1,20 +1,27 @@
 import com.sun.glass.ui.ClipboardAssistance
 import javafx.scene.input.Clipboard
+import kotlinx.serialization.json.JSON
 import sun.awt.datatransfer.ClipboardTransferable
 import java.awt.Image
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
+import java.io.File
+import kotlinx.serialization.Serializer
 
 class ClipboardManager {
 
-	var history: ClipboardHistory = ClipboardHistory();
+	var historyFile = File(File("").absolutePath + File.separator + "clipboard.hst");
+	
+	val history: ClipboardHistory;
 	val clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 	val fxClipboard = Clipboard.getSystemClipboard();
 	var availableFlavors: List<DataFlavor>;
 	val clipboardAssistance: ClipboardAssistance;
 
 	constructor() {
+		history = loadHistory()
+		
 		availableFlavors = listOf(
 				DataFlavor.allHtmlFlavor,
 				DataFlavor.fragmentHtmlFlavor,
@@ -29,7 +36,6 @@ class ClipboardManager {
 				handleClipboardData()
 			}
 		}
-
 	}
 
 	fun handleClipboardData() {
@@ -50,16 +56,31 @@ class ClipboardManager {
 
 	fun set(entry: ClipboardEntry) {
 		clipboard.setContents(entry.transferable, null);
-
-//		if (entry.flavor == DataFlavor.imageFlavor) {
-//			clipboard.setContents(ImageTransferable((entry.data as Image)), null)
-//		} else if (entry.flavor == DataFlavor.javaFileListFlavor){
-//			DataFlavor.javaFileListFlavor
-//		} else {
-//			clipboard.setContents(StringSelection(entry.data as String), null);
-//		}
+	}
+	
+	fun saveHistory() {
+		print("1")
+		print("2")
+		print("3")
+		print("4")
+		print("5")
+		print("6")
+		try {
+			if (!historyFile.exists()) {
+				historyFile.createNewFile()
+				if (System.getProperty("os.name").startsWith("Windows")) {
+					Runtime.getRuntime().exec("attrib +H " + historyFile.absolutePath);
+				}
+			}
+		} catch (e : Exception) {
+			
+		}
 	}
 
+	fun loadHistory() : ClipboardHistory {
+		return ClipboardHistory()
+	}
+	
 }
 
 class ImageTransferable(val image: Image) : Transferable {

@@ -7,31 +7,37 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<tornadofx.version>1.7.17</tornadofx.version>
-		<kotlin.version>1.2.71</kotlin.version>
+		<kotlin.version>1.3.0</kotlin.version>
+		<serialization.version>0.9.0</serialization.version>
 		<kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
 	</properties>
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>kotlin-maven-plugin</artifactId>
 				<groupId>org.jetbrains.kotlin</groupId>
+				<artifactId>kotlin-maven-plugin</artifactId>
 				<version>${kotlin.version}</version>
-
 				<executions>
 					<execution>
 						<id>compile</id>
+						<phase>compile</phase>
 						<goals>
 							<goal>compile</goal>
 						</goals>
 					</execution>
-
-					<execution>
-						<id>test-compile</id>
-						<goals>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
 				</executions>
+				<configuration>
+					<compilerPlugins>
+						<plugin>kotlinx-serialization</plugin>
+					</compilerPlugins>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.jetbrains.kotlin</groupId>
+						<artifactId>kotlinx-maven-serialization-plugin</artifactId>
+						<version>${kotlin.version}</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
@@ -53,6 +59,17 @@
 			<artifactId>kotlin-stdlib</artifactId>
 			<version>${kotlin.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jetbrains.kotlinx</groupId>
+			<artifactId>kotlinx-serialization-runtime</artifactId>
+			<version>${serialization.version}</version>
+		</dependency>
 	</dependencies>
-
+	<repositories>
+		<repository>
+			<id>bintray-kotlin-kotlinx</id>
+			<name>bintray</name>
+			<url>https://kotlin.bintray.com/kotlinx</url>
+		</repository>
+	</repositories>
 </project>

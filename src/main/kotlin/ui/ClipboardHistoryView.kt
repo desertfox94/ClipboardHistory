@@ -12,6 +12,7 @@ import tornadofx.readonlyColumn
 import tornadofx.tableview
 import javafx.scene.input.MouseButton
 import java.text.SimpleDateFormat
+import javafx.scene.control.Tooltip
 
 class ClipboardHistoryView() : View() {
 
@@ -33,15 +34,20 @@ class ClipboardHistoryView() : View() {
 					}
 				})
 				readonlyColumn("Type", ClipboardEntry::flavor).cellFormat {
-					text = it.subType
+					text = it?.subType
 				}
-				readonlyColumn("Count", ClipboardEntry::data).contentWidth(useAsMax = true)
+				readonlyColumn("Content", ClipboardEntry::data).cellFormat {
+					val content = it.toString();
+					tooltip = Tooltip(it.toString())
+					text = content
+				}
 				readonlyColumn("Timestamp", ClipboardEntry::date).cellFormat {
 					text = dateFormatter.format(it);
 				}
 			}
-
 		}
+		
+		Runtime.getRuntime().addShutdownHook(Thread() { clipboardManager.saveHistory() });
 	}
 
 }

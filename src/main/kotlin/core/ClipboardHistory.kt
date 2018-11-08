@@ -1,10 +1,12 @@
 import javafx.collections.ObservableList
 import javafx.collections.FXCollections
+import kotlinx.serialization.Serializable
 
-class ClipboardHistory {
+@Serializable
+data class ClipboardHistory (val entries: ObservableList<ClipboardEntry>) {
 
-	val entries: ObservableList<ClipboardEntry> = FXCollections.observableArrayList();
-
+	constructor () : this(FXCollections.observableArrayList())
+	
 	fun add(entry: ClipboardEntry) {
 		if (entries.contains(entry))
 			return;
