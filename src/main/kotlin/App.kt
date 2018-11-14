@@ -1,6 +1,6 @@
 import javafx.application.Application
 import tornadofx.App
-import ui.ClipboardHistoryView
+import views.ClipboardHistoryView
 
 class ClipboardApp : App() {
 	

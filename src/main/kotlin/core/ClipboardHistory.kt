@@ -1,16 +1,21 @@
-import javafx.collections.ObservableList
+package core
+import java.util.LinkedList
 import javafx.collections.FXCollections
-import kotlinx.serialization.Serializable
 
-@Serializable
-data class ClipboardHistory (val entries: ObservableList<ClipboardEntry>) {
+class ClipboardHistory (var entries: MutableCollection<ClipboardEntry> = LinkedList()) {
 
-	constructor () : this(FXCollections.observableArrayList())
-	
 	fun add(entry: ClipboardEntry) {
 		if (entries.contains(entry))
 			return;
 		entries.add(entry);
 	}
 
+	fun makeObservable() {
+		entries = FXCollections.observableArrayList(entries)
+	}
+	
+	fun current() : ClipboardEntry {
+		return entries.last();
+	}
+	
 }

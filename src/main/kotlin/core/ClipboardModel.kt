@@ -1,27 +1,37 @@
+package core
+
+import com.google.gson.Gson
 import com.sun.glass.ui.ClipboardAssistance
+import javafx.beans.property.SimpleStringProperty
+import javafx.beans.value.ObservableValue
+import javafx.collections.ObservableList
 import javafx.scene.input.Clipboard
-import kotlinx.serialization.json.JSON
 import sun.awt.datatransfer.ClipboardTransferable
-import java.awt.Image
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
-import java.awt.datatransfer.Transferable
 import java.io.File
-import kotlinx.serialization.Serializer
 
-class ClipboardManager {
+class ClipboardModel {
+
 
 	var historyFile = File(File("").absolutePath + File.separator + "clipboard.hst");
-	
-	val history: ClipboardHistory;
+
+	var history: ClipboardHistory;
 	val clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 	val fxClipboard = Clipboard.getSystemClipboard();
 	var availableFlavors: List<DataFlavor>;
 	val clipboardAssistance: ClipboardAssistance;
 
+	val currentContent = SimpleStringProperty()
+
+	var currentEntry: ClipboardEntry? = null;
+
 	constructor() {
 		history = loadHistory()
-		
+		currentContent.addListener({ obs ->
+			val current = history.current();
+			set(ClipboardEntry(current.mimeType, current.humanPresentableName, currentContent.get()))
+		})
 		availableFlavors = listOf(
 				DataFlavor.allHtmlFlavor,
 				DataFlavor.fragmentHtmlFlavor,
@@ -36,6 +46,11 @@ class ClipboardManager {
 				handleClipboardData()
 			}
 		}
+
+	}
+
+	fun changed(observable: ObservableValue<String>, oldValue: String, newValue: String) {
+
 	}
 
 	fun handleClipboardData() {
@@ -45,7 +60,8 @@ class ClipboardManager {
 				val transferable = clipboard.getContents(ClipboardTransferable::class)
 				data = clipboard.getData(flavor);
 				if (data != null) {
-					history.add(ClipboardEntry(data, flavor, transferable));
+					history.add(ClipboardEntry(flavor, transferable.getTransferData(flavor)));
+					currentContent.set(data.toString())
 					break;
 				}
 			} catch (e: Exception) {
@@ -55,44 +71,37 @@ class ClipboardManager {
 	}
 
 	fun set(entry: ClipboardEntry) {
-		clipboard.setContents(entry.transferable, null);
+		clipboard.setContents(entry.getTransferable(), null)
 	}
-	
+
 	fun saveHistory() {
-		print("1")
-		print("2")
-		print("3")
-		print("4")
-		print("5")
-		print("6")
 		try {
 			if (!historyFile.exists()) {
 				historyFile.createNewFile()
-				if (System.getProperty("os.name").startsWith("Windows")) {
-					Runtime.getRuntime().exec("attrib +H " + historyFile.absolutePath);
-				}
 			}
-		} catch (e : Exception) {
-			
+			historyFile.writeText(Gson().toJson(history))
+		} catch (e: Exception) {
+			e.printStackTrace()
 		}
 	}
 
-	fun loadHistory() : ClipboardHistory {
+	fun loadHistory(): ClipboardHistory {
+		if (historyFile.exists()) {
+			val history = Gson().fromJson(historyFile.readText(), ClipboardHistory::class.java)
+			history.makeObservable()
+			return history;
+		}
 		return ClipboardHistory()
 	}
-	
-}
 
-class ImageTransferable(val image: Image) : Transferable {
-	override fun getTransferData(flavor: DataFlavor?): Any? {
-		return image;
+	fun getHistory(): ObservableList<ClipboardEntry> {
+		return history.entries as ObservableList<ClipboardEntry>
 	}
 
-	override fun isDataFlavorSupported(flavor: DataFlavor?): Boolean {
-		return flavor == DataFlavor.imageFlavor;
+	fun clearHistory() {
+		history = ClipboardHistory();
+		history.makeObservable()
 	}
 
-	override fun getTransferDataFlavors(): Array<out DataFlavor>? {
-		return arrayOf(DataFlavor.imageFlavor);
-	}
+
 }
