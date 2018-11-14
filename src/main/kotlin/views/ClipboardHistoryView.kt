@@ -50,8 +50,9 @@ class ClipboardHistoryView() : View() {
 		historyTableView.setItems(items)
 	}
 
-	fun showCurrentClipboardContent(content: String) {
+	fun showCurrentClipboardContent(content: String?) {
 		currentContent.setText(content)
+		currentContent.editableProperty().set(content != null)
 	}
 
 }

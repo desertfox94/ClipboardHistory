@@ -4,7 +4,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable
 import java.util.Date
 
-class ClipboardEntry constructor(val mimeType : String, val humanPresentableName : String, val data : Any, val date : Date? = Date()) {
+class ClipboardEntry constructor(val mimeType : String, val humanPresentableName : String, var data : Any, val date : Date? = Date()) {
 
 	constructor (flavor : DataFlavor, data : Any) : this(flavor.mimeType, flavor.humanPresentableName, data) {
 	}

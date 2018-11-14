@@ -2,7 +2,7 @@ package core
 import java.util.LinkedList
 import javafx.collections.FXCollections
 
-class ClipboardHistory (var entries: MutableCollection<ClipboardEntry> = LinkedList()) {
+class ClipboardHistory (var entries: MutableCollection<ClipboardEntry> = FXCollections.observableArrayList()) {
 
 	fun add(entry: ClipboardEntry) {
 		if (entries.contains(entry))
@@ -14,8 +14,8 @@ class ClipboardHistory (var entries: MutableCollection<ClipboardEntry> = LinkedL
 		entries = FXCollections.observableArrayList(entries)
 	}
 	
-	fun current() : ClipboardEntry {
-		return entries.last();
+	fun current() : ClipboardEntry? {
+		return entries.lastOrNull();
 	}
 	
 }

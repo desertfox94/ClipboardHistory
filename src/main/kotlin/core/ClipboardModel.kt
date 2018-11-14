@@ -24,14 +24,8 @@ class ClipboardModel {
 
 	val currentContent = SimpleStringProperty()
 
-	var currentEntry: ClipboardEntry? = null;
-
 	constructor() {
 		history = loadHistory()
-		currentContent.addListener({ obs ->
-			val current = history.current();
-			set(ClipboardEntry(current.mimeType, current.humanPresentableName, currentContent.get()))
-		})
 		availableFlavors = listOf(
 				DataFlavor.allHtmlFlavor,
 				DataFlavor.fragmentHtmlFlavor,
@@ -46,10 +40,6 @@ class ClipboardModel {
 				handleClipboardData()
 			}
 		}
-
-	}
-
-	fun changed(observable: ObservableValue<String>, oldValue: String, newValue: String) {
 
 	}
 
@@ -79,7 +69,11 @@ class ClipboardModel {
 			if (!historyFile.exists()) {
 				historyFile.createNewFile()
 			}
-			historyFile.writeText(Gson().toJson(history))
+			if (history.entries.isEmpty()){
+				historyFile.delete()
+			} else {
+				historyFile.writeText(Gson().toJson(history))
+			}
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
@@ -98,9 +92,10 @@ class ClipboardModel {
 		return history.entries as ObservableList<ClipboardEntry>
 	}
 
-	fun clearHistory() {
+	fun clear() {
 		history = ClipboardHistory();
 		history.makeObservable()
+		currentContent.set(null)
 	}
 
 

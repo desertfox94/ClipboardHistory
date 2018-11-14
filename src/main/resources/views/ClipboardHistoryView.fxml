@@ -27,7 +27,7 @@
                 <Button mnemonicParsing="false" onAction="#clearHistory" text="Clear History" />
               </items>
             </ToolBar>
-            <TextArea fx:id="currentContent" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" />
+            <TextArea editable="false" fx:id="currentContent" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" />
             <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Current Cliboard Content" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                <font>
                   <Font name="Calibri" size="14.0" />
