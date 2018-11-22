@@ -27,4 +27,8 @@ class ClipboardHistoryController(val view: ClipboardHistoryView) : Controller() 
 		view.show(model.getHistory())
 	}
 	
+	fun select(entry : ClipboardEntry) {
+		model.set(entry);
+	}
+	
 }

@@ -23,9 +23,12 @@ class ClipboardModel {
 	val clipboardAssistance: ClipboardAssistance;
 
 	val currentContent = SimpleStringProperty()
+	
+	var currentEntry : ClipboardEntry?;
 
 	constructor() {
 		history = loadHistory()
+		currentEntry = history.current()
 		availableFlavors = listOf(
 				DataFlavor.allHtmlFlavor,
 				DataFlavor.fragmentHtmlFlavor,
@@ -51,6 +54,7 @@ class ClipboardModel {
 				data = clipboard.getData(flavor);
 				if (data != null) {
 					history.add(ClipboardEntry(flavor, transferable.getTransferData(flavor)));
+					currentEntry = history.current()
 					currentContent.set(data.toString())
 					break;
 				}
@@ -61,6 +65,8 @@ class ClipboardModel {
 	}
 
 	fun set(entry: ClipboardEntry) {
+		currentEntry = entry;
+		currentContent.set(entry.data.toString())
 		clipboard.setContents(entry.getTransferable(), null)
 	}
 
